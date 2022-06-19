@@ -10,47 +10,20 @@ BUTTON_TEXT = ("Birch std", 12, 'italic')
 weather_list = ['Normal', 'Cold', 'Hot', 'Extreme Heat', 'Extreme Cold', 'Light Wind',
                 'Strong Wind', 'Light Rain', 'Light Snow', 'Heavy Rain', 'Heavy Snow']
 
-weather_descriptions = {
-    'Extreme Heat': "When the temperature is at or above 100 degrees Fahrenheit, "
-                    "a creature exposed to the heat and without access to drinkable water must succeed "
-                    "on a Constitution saving throw at the end of each hour or gain one level of exhaustion."
-                    "The DC is 5 for the first hour and increases by 1 for each additional hour. "
-                    "Creatures wearing medium or heavy armor, or who are clad in heavy clothing, "
-                    "have disadvantage on the saving throw. Creatures with resistance or immunity to "
-                    "fire damage automatically succeed on the saving throw, "
-                    "as do creatures naturally adapted to hot climates. ",
-    'Extreme Cold': "Whenever the temperature is at or below 0 degrees Fahrenheit, a creature exposed to "
-                    "the cold must succeed on a DC 10 Constitution saving throw at the end of each hour or "
-                    "gain one level of exhaustion. Creatures with resistance or immunity to cold damage "
-                    "automatically succeed on the saving throw, as do creatures wearing cold weather gear "
-                    "(thick coats, gloves, and the like) and creatures naturally adapted to cold climates.",
-    'Strong Wind': "A strong wind imposes disadvantage on ranged weapon attack rolls and Wisdom (Perception) "
-                   "checks that rely on hearing. A strong wind also extinguishes open flames, disperses fog, "
-                   "and makes flying by nonmagical means nearly impossible. A flying creature in a strong wind "
-                   "must land at the end of its turn or fall. A strong wind in a desert can create a sandstorm "
-                   "that imposes disadvantage on Wisdom (Perception) checks that rely on sight.",
-    'Heavy Precipitation': "Everything within an area of heavy rain or heavy snowfall is lightly obscured, "
-                           "and creatures in the area have disadvantage on Wisdom (Perception) checks that "
-                           "rely on sight. Heavy rain also extinguishes open flames and imposes disadvantage "
-                           "on Wisdom (Perception) checks that rely on hearing"
-}
-
-
 class DmTimer:
     """An easy to use GUI based D&D time tracker."""
 
     def __init__(self):
-        # Read the stored data and set the self values:
+        # ------------------------------------- Lists ----------------------------------------------
         self.days = ['Starday', 'Sunday', 'Moonday', 'Godsday', 'Waterday', 'Earthday', 'Freeday']
         self.months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
                        'August', 'September', 'October', 'November', 'December']
         self.seasons = ['Winter', 'Spring', 'Summer', 'Autumn']
-        # self.data_list = []
-        # with open(file='clock_data.txt', mode='r') as file:
-        #     for data in file.readlines():
-        #         wanted_data = data.strip()
-        #         self.data_list.append(wanted_data)
-        # Read stored data data.
+        self.modes_of_travel = ['Walking', 'Galley', 'Keelboat', 'Longship', 'Rowboat',
+                                'Sailing Ship', 'Warship', 'Draft Horse', 'Riding Horse', 'Griffon', 'Pegasus']
+        self.travel_speed = ['Slow', 'Medium', 'Fast']
+
+        # Read saved data and set up variables needed for methods:
         with open("data.json", "r") as data_file:
             data = json.load(data_file)
         self.hour = int(data['hour'])
@@ -58,8 +31,6 @@ class DmTimer:
         self.date_counter = int(data['date_counter'])
         self.month_counter = int(data['month_counter'])
         self.season_counter = int(data['season_counter'])
-
-        # Set up the variables needed for the methods:
         self.day = self.days[self.date_counter % 7]
         self.season = self.seasons[self.season_counter]
         self.month = self.months[self.month_counter % 12]
@@ -72,17 +43,12 @@ class DmTimer:
         self.current_weather = []
         self.update_weather()
 
-        # Drop down lists:
-        self.modes_of_travel = ['Walking', 'Galley', 'Keelboat', 'Longship', 'Rowboat',
-                                'Sailing Ship', 'Warship', 'Draft Horse', 'Riding Horse', 'Griffon', 'Pegasus']
-        self.travel_speed = ['Slow', 'Medium', 'Fast']
-
-        # GUI Intialization
+        # ------------------------- GUI Initialization -----------------------------
         self.window = Tk()
         self.window.title("DM Clock")
         self.window.config(height=600, width=800)
 
-        # Canvas
+        # ------------------------------- Canvas ------------------------------------
         self.canvas = Canvas(width=600, height=200)
         image = PhotoImage(file="sun_and_cloud.png")
         self.canvas.create_image(300, 100, image=image)
@@ -96,7 +62,7 @@ class DmTimer:
                                                  fill='black', font=BUTTON_TEXT)
         self.canvas.grid(column=0, columnspan=4, row=1)
 
-        # Buttons
+        # ------------------------------- Buttons ------------------------------------
         self.weather_button = Button()
         self.weather_button.config(width=20, text='Weather Generator', font=BUTTON_TEXT, command=self.weather_generator)
         self.weather_button.grid(column=0, row=2, padx=10, pady=10)
@@ -126,7 +92,7 @@ class DmTimer:
         self.save_button.config(text='Save', command=self.update_data)
         self.save_button.grid(column=1, row=7)
 
-        # Labels
+        # ------------------------------- Labels ------------------------------------
         self.title = Label()
         self.title.config(text='DM Time and Travel Clock', fg='Black', font=("Birch std", 24, 'italic'))
         self.title.grid(column=1, columnspan=2, row=0)
@@ -143,7 +109,7 @@ class DmTimer:
         self.set_time_label.config(text='Set the time:', fg='black', font=BUTTON_TEXT)
         self.set_time_label.grid(column=0, row=6, pady=10, padx=10)
 
-        # Entries
+        # ------------------------------- Entries ------------------------------------
         self.busy_entry = Entry()
         self.busy_entry.config(width=30, highlightthickness=0)
         self.busy_entry.grid(column=1, columnspan=2, row=3)
@@ -162,7 +128,7 @@ class DmTimer:
         self.set_time_minute_entry.config(width=20, highlightthickness=0)
         self.set_time_minute_entry.grid(column=2, row=6)
 
-        # Comboboxes - Drop-down boxes in the GUI
+        # ------------------------------- Comboboxes ------------------------------------
         self.vehicle_choice = ttk.Combobox(self.window, values=self.modes_of_travel, width=20)
         self.vehicle_choice.grid(column=1, row=4)
 
@@ -179,14 +145,21 @@ class DmTimer:
         self.window.mainloop()
         self.update_data()
 
+    # ------------------------------- Methods ------------------------------------
+
     def test(self):
-        self.hour += 1
-        self.update_timer()
+        """Used with the test button
+        Here to be used for any future methods."""
+        # self.hour += 1
+        # self.update_timer()
 
     def gui_travel_timer(self):
         """
         Method that calculates time taken travelling using the following:
-        - Distance - Speed of travel - Mode of travel
+
+                   Distance - Speed of travel - Mode of travel
+
+        Triggers the update_timer method upon completion
         """
         self.reg_distance = int(self.distance_entry.get())
         vehicle = self.vehicle_choice.get()
