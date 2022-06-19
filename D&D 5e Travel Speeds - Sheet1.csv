@@ -1,0 +1,13 @@
+Mode of Transport,Slow,Medium,Fast
+Walking,2.5,5,7
+Galley,3.5,5,6.5
+Keelboat,2,3.5,5
+Longship,5,6.5,8
+Rowboat,2,3.5,5
+Sailing Ship,5,6.5,8
+Warship,3.5,5,6.5
+Draft Horse,3.5,7,14
+Riding Horse,5.5,11,22
+Griffon,7.5,15,30
+Pegasus,8,16.5,33
+
